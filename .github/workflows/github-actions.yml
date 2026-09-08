@@ -1,0 +1,17 @@
+name: mesh_statusd
+on:
+  push:
+    tags-ignore:
+      - '*'
+    branches:
+      - '*'
+jobs:
+  test:
+    runs-on: ubuntu-22.04-arm
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run unit tests
+        run: make test

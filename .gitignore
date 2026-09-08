@@ -1,0 +1,3 @@
+*.o
+mesh_statusd
+test_main

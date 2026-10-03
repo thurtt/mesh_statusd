@@ -25,10 +25,9 @@ SRCS := $(filter-out test_%.c, $(ALL_SRC))
 OBJ_FILES := $(addprefix $(BUILD_DIR)/, $(notdir $(SRCS:.c=.o)))
 OBJS := $(filter-out $(BUILD_DIR)/test_%.o, $(OBJ_FILES))
 
-DUPES := $(shell printf '%s\n' $(notdir $(SRCS)) | sort | uniq -d)
-ifneq ($(DUPES),)
-$(error Duplicate source filenames across SRC_DIRS, cannot flatten build dir: $(DUPES))
-endif
+# wrap flags are used to wrap system calls in the test runner
+WRAP_FLAGS = -Wl,--wrap=sysinfo -Wl,--wrap=sysconf -Wl,--wrap=popen \
+             -Wl,--wrap=fread -Wl,--wrap=pclose
 
 vpath %.c $(SRC_DIRS)
 
@@ -53,6 +52,7 @@ $(BUILD_DIR)/%.o: %.c | $(BUILD_DIR)
 $(PROG): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-test: $(PROG)
-	$(CC) $(CFLAGS) $(TEST_SRC) $(UNITY_SRC) -o $(TEST)
+test: $(BUILD_DIR)/display.o $(BUILD_DIR)/measurement.o
+	$(CC) $(CFLAGS) $(TEST_SRC) $(BUILD_DIR)/display.o $(BUILD_DIR)/measurement.o \
+	    $(UNITY_SRC) -o $(TEST) $(WRAP_FLAGS) -lm
 	$(CURDIR)/test_main

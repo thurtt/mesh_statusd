@@ -115,9 +115,19 @@ int main(int argc, char * argv[])
 
     while(true)
     {
+        cpu_mem_load(&data.cpu_load, &data.mem_usage);
+        data.gps_sync = gps_sync();
+        data.nodes = node_count();
+        if ( mesh_state() )
+        {
+            strncpy(data.svc_state, "Ok", sizeof(data.svc_state));
+        }
+        else
+        {
+            strncpy(data.svc_state, "Down", sizeof(data.svc_state));
+        }
+
         write_status_update(ImageBackground, data);
-        data.cpu_load = (data.cpu_load + 1) % 101;
-        data.mem_usage = (data.mem_usage + 1) % 101;
         sleep(1);
     }
 }

@@ -12,7 +12,9 @@
 #include <string.h>
 #include <sys/types.h>
 #include <errno.h>
-#include <pthread.h>
+#include <sys/stat.h>
+#include <sys/sysinfo.h>
+#include <math.h>
 
 #include "DEV_Config.h"
 #include "GUI_Paint.h"
@@ -33,6 +35,10 @@
 #define DISPLAY_WIDTH 128
 #define DISPLAY_HEIGHT 128
 
+// thresholds
+extern int CPU_THRESHOLD[];
+extern int MEM_THRESHOLD[];
+
 // daemon prototypes
 int daemon_runner();
 
@@ -50,3 +56,8 @@ void write_status_update(UBYTE *ImageBackground, struct DisplayData data);
 void write_line(UBYTE *ImageBackground, const char *key, const char *value, uint16_t val_color, int lineno);
 void shutdown_display();
 int text_width(const char *text, sFONT * Font);
+
+void cpu_mem_load(int * cpu_load, int * mem_usage);
+bool gps_sync();
+bool mesh_state();
+int node_count();

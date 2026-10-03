@@ -1,25 +1,16 @@
 #include <stdlib.h>
 #include "unity.h"
 
+
 const char * RUN_CMD = "./mesh_statusd";
 
-void setUp(void)
-{
-}
+void run_display_test();
+void run_measurement_tests();
 
-void tearDown(void)
+int main(void)
 {
-}
-
-void test_main_exits_zero(void)
-{
-    int rc = system(RUN_CMD);
-    TEST_ASSERT_TRUE(rc == 0);
-}
-
-// not needed when using generate_test_runner.rb
-int main(void) {
     UNITY_BEGIN();
-    RUN_TEST(test_main_exits_zero);
+    run_display_test();
+    run_measurement_tests();
     return UNITY_END();
 }

@@ -1,0 +1,17 @@
+[Unit]
+Description=Mesh Status Daemon
+After=meshtasticd.service
+StartLimitInterval=200
+StartLimitBurst=5
+
+[Service]
+User=root
+Group=root
+Type=simple
+ExecStart=/usr/bin/mesh_statusd -d
+WorkingDirectory=/usr/bin
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

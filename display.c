@@ -5,7 +5,7 @@
 
 // thresholds
 int CPU_THRESHOLD[] = { 50, 95 };
-int MEM_THRESHOLD[] = { 50, 95 };
+int MEM_THRESHOLD[] = { 50, 90 };
 
 UBYTE * init_display()
 {
@@ -132,8 +132,9 @@ void shutdown_display()
     // // let any pending updates finish
     // DEV_Delay_ms(1500);
     // OLED_1in5_rgb_Clear();
-    // DEV_Delay_ms(500);
+    DEV_Delay_ms(500);
     OLED_Reset();
+    DEV_Delay_ms(500);
 
 }
 

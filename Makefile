@@ -2,11 +2,15 @@ CC := $(CROSS_COMPILE)gcc
 AR := $(CROSS_COMPILE)ar
 STRIP := $(CROSS_COMPILE)strip
 
-CFLAGS +=-Wall -Werror -std=gnu11 -D_GNU_SOURCE -g -DUSE_DEV_LIB -DUSE_SPI -I $(CURDIR)/Unity/src -I $(CURDIR)/lg -I $(CURDIR)/oled -I $(CURDIR)/oled/Config -I $(CURDIR)/oled/Fonts -I $(CURDIR)/oled/GUI
-LDFLAGS +=-L$(CURDIR)/lg -lm -llgpio
+# App-only flags. This will keep some of the compiler warnings that are in libraries
+# that we don't control from failing in the yocto build.
+APP_CFLAGS  = $(CFLAGS) -Wall $(WERROR) -std=gnu11 -D_GNU_SOURCE -g -DUSE_DEV_LIB -DUSE_SPI \
+              -I $(CURDIR)/Unity/src -I $(CURDIR)/lg -I $(CURDIR)/oled \
+              -I $(CURDIR)/oled/Config -I $(CURDIR)/oled/Fonts -I $(CURDIR)/oled/GUI
+APP_LDFLAGS = $(LDFLAGS) -L$(CURDIR)/lg -lm -llgpio
 
-
-
+# Set WERROR= (empty) to build without -Werror when using yocto
+WERROR ?= -Werror
 
 # add in the raspberry pi gpio linux headers.
 # This is needed for the lg library to compile correctly.
@@ -26,6 +30,8 @@ TEST_SRC = $(wildcard test_*.c)
 SRCS := $(filter-out test_%.c, $(ALL_SRC))
 OBJ_FILES := $(addprefix $(BUILD_DIR)/, $(notdir $(SRCS:.c=.o)))
 OBJS := $(filter-out $(BUILD_DIR)/test_%.o, $(OBJ_FILES))
+
+
 
 # wrap flags are used to wrap system calls in the test runner
 WRAP_FLAGS = -Wl,--wrap=sysinfo -Wl,--wrap=sysconf -Wl,--wrap=popen \
@@ -49,12 +55,12 @@ clean:
 	-$(MAKE) -C $(CURDIR)/lg/ clean
 
 $(BUILD_DIR)/%.o: %.c | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(APP_CFLAGS) -c $< -o $@
 
-$(PROG): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+$(PROG): $(OBJS) | lg
+	$(CC) $(APP_CFLAGS) -o $@ $^ $(APP_LDFLAGS)
 
 test: $(BUILD_DIR)/display.o $(BUILD_DIR)/measurement.o
-	$(CC) $(CFLAGS) $(TEST_SRC) $(BUILD_DIR)/display.o $(BUILD_DIR)/measurement.o \
+	$(CC) $(APP_CFLAGS) $(TEST_SRC) $(BUILD_DIR)/display.o $(BUILD_DIR)/measurement.o \
 	    $(UNITY_SRC) -o $(TEST) $(WRAP_FLAGS) -lm
 	$(CURDIR)/test_main

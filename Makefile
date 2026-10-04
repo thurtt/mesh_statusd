@@ -2,8 +2,10 @@ CC := $(CROSS_COMPILE)gcc
 AR := $(CROSS_COMPILE)ar
 STRIP := $(CROSS_COMPILE)strip
 
-CFLAGS ?=-Wall -Werror -std=gnu11 -D_GNU_SOURCE -g -DUSE_DEV_LIB -DUSE_SPI -I $(CURDIR)/Unity/src -I $(CURDIR)/lg -I $(CURDIR)/oled -I $(CURDIR)/oled/Config -I $(CURDIR)/oled/Fonts -I $(CURDIR)/oled/GUI
-LDFLAGS ?=-L$(CURDIR)/lg -lm -llgpio
+CFLAGS +=-Wall -Werror -std=gnu11 -D_GNU_SOURCE -g -DUSE_DEV_LIB -DUSE_SPI -I $(CURDIR)/Unity/src -I $(CURDIR)/lg -I $(CURDIR)/oled -I $(CURDIR)/oled/Config -I $(CURDIR)/oled/Fonts -I $(CURDIR)/oled/GUI
+LDFLAGS +=-L$(CURDIR)/lg -lm -llgpio
+
+
 
 
 # add in the raspberry pi gpio linux headers.
@@ -39,7 +41,7 @@ $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
 lg:
-	$(MAKE) -C $(CURDIR)/lg/ CC=$(CC) AR=$(AR) STRIP=$(STRIP) CROSS_COMPILE=$(CROSS_COMPILE)
+	$(MAKE) -C $(CURDIR)/lg/ CC="$(CC)" AR="$(AR)" STRIP="$(STRIP)" CROSS_COMPILE=$(CROSS_COMPILE)
 
 clean:
 	-rm -rf $(BUILD_DIR)

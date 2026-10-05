@@ -26,7 +26,7 @@
 
 // file handling defines
 #define BUFFER_SIZE 1024
-#define PID_FILE "/tmp/mesh_statusd.pid"
+#define PID_FILE "/run/mesh_statusd.pid"
 
 // timer defines
 #define TIMER_INTERVAL 30
